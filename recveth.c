@@ -6,7 +6,7 @@
  */
 
 #include <arpa/inet.h>
-#ifdef __LINUX__
+#ifdef __linux__
 #include <linux/if_packet.h>
 #include <linux/ip.h>
 #include <linux/udp.h>
@@ -18,7 +18,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <net/if.h>
-#ifdef __LINUX__
+#ifdef __linux__
 #include <netinet/ether.h>
 #endif
 #define ETHER_TYPE	0x0800
