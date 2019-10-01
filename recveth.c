@@ -41,11 +41,17 @@ int main(int argc, char *argv[])
 	int c;
 	char *macaddr= NULL;
 	static unsigned char DEST_MAC[6];
+	int dsttest= 1;
+	int srctest= 0;
 	
 	opterr = 0;
 
-	while ((c = getopt (argc, argv, "va:i:")) != -1) {
+	while ((c = getopt (argc, argv, "vsa:i:")) != -1) {
 	  switch (c) {
+	    case 's':
+	      srctest= 1;
+	      dsttest= 0;
+	      break;
 	    case 'v':
 	      talkative= 1;
 	      break;
@@ -116,7 +122,8 @@ int main(int argc, char *argv[])
 	  printf("listener: got packet %lu bytes\n", numbytes);
 
 	/* Check the packet is for me */
-	if (eh->ether_dhost[0] == DEST_MAC[0] &&
+	if (dsttest) {
+		if (eh->ether_dhost[0] == DEST_MAC[0] &&
 			eh->ether_dhost[1] == DEST_MAC[1] &&
 			eh->ether_dhost[2] == DEST_MAC[2] &&
 			eh->ether_dhost[3] == DEST_MAC[3] &&
@@ -135,7 +142,29 @@ int main(int argc, char *argv[])
 	  ret = -1;
 	  goto done;
 	}
+	}
 
+	if (srctest) {
+		if (eh->ether_shost[0] == DEST_MAC[0] &&
+			eh->ether_shost[1] == DEST_MAC[1] &&
+			eh->ether_shost[2] == DEST_MAC[2] &&
+			eh->ether_shost[3] == DEST_MAC[3] &&
+			eh->ether_shost[4] == DEST_MAC[4] &&
+			eh->ether_dhost[5] == DEST_MAC[5]) {
+		printf("Correct source MAC address\n");
+	} else {
+	  if (talkative)
+		printf("Wrong source MAC: %x:%x:%x:%x:%x:%x\n",
+						eh->ether_shost[0],
+						eh->ether_shost[1],
+						eh->ether_shost[2],
+						eh->ether_shost[3],
+						eh->ether_shost[4],
+						eh->ether_shost[5]);
+	  ret = -1;
+	  goto done;
+	}
+	}
 	/* Get source IP */
 	((struct sockaddr_in *)&their_addr)->sin_addr.s_addr = iph->saddr;
 	inet_ntop(AF_INET, &((struct sockaddr_in*)&their_addr)->sin_addr, sender, sizeof sender);
