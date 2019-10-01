@@ -145,25 +145,31 @@ int main(int argc, char *argv[])
 	}
 
 	if (srctest) {
-		if (eh->ether_shost[0] == DEST_MAC[0] &&
-			eh->ether_shost[1] == DEST_MAC[1] &&
-			eh->ether_shost[2] == DEST_MAC[2] &&
-			eh->ether_shost[3] == DEST_MAC[3] &&
-			eh->ether_shost[4] == DEST_MAC[4] &&
-			eh->ether_dhost[5] == DEST_MAC[5]) {
-		printf("Correct source MAC address\n");
-	} else {
-	  if (talkative)
-		printf("Wrong source MAC: %x:%x:%x:%x:%x:%x\n",
-						eh->ether_shost[0],
-						eh->ether_shost[1],
-						eh->ether_shost[2],
-						eh->ether_shost[3],
-						eh->ether_shost[4],
-						eh->ether_shost[5]);
-	  ret = -1;
-	  goto done;
-	}
+	  if (eh->ether_shost[0] == DEST_MAC[0] &&
+	      eh->ether_shost[1] == DEST_MAC[1] &&
+	      eh->ether_shost[2] == DEST_MAC[2] &&
+	      eh->ether_shost[3] == DEST_MAC[3] &&
+	      eh->ether_shost[4] == DEST_MAC[4] &&
+	      eh->ether_shost[5] == DEST_MAC[5]) {
+	    printf("Correct source MAC address\n");
+	  } else {
+	    if (talkative)
+	      printf("Wrong source MAC: %x:%x:%x:%x:%x:%x vs %x:%x:%x:%x:%x:%x\n",
+		     eh->ether_shost[0],
+		     eh->ether_shost[1],
+		     eh->ether_shost[2],
+		     eh->ether_shost[3],
+		     eh->ether_shost[4],
+		     eh->ether_shost[5],
+		     DEST_MAC[0],
+		     DEST_MAC[1],
+		     DEST_MAC[2],
+		     DEST_MAC[3],
+		     DEST_MAC[4],
+		     DEST_MAC[5]);
+	    ret = -1;
+	    goto done;
+	  }
 	}
 	/* Get source IP */
 	((struct sockaddr_in *)&their_addr)->sin_addr.s_addr = iph->saddr;
